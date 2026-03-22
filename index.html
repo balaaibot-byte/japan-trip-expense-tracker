@@ -3,255 +3,286 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Japan Trip Tracker · SGD / JPY</title>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&family=DM+Mono:wght@300;400;500&family=Zen+Kaku+Gothic+New:wght@300;400;700&display=swap" rel="stylesheet">
+<title>Japan Trip Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ink: #1a1208; --paper: #faf6ef; --warm: #f5ede0;
-    --red: #c0392b; --gold: #c8973a; --green: #27ae60;
-    --muted: #8a7560; --border: #d4c4a8;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: 'DM Mono', monospace; min-height: 100vh;
-    background-image: radial-gradient(ellipse at 10% 20%, rgba(200,151,58,0.07) 0%, transparent 50%), radial-gradient(ellipse at 90% 80%, rgba(192,57,43,0.05) 0%, transparent 50%); }
+:root{--ink:#1a1208;--paper:#faf6ef;--warm:#f5ede0;--red:#c0392b;--gold:#c8973a;--green:#27ae60;--muted:#8a7560;--border:#d4c4a8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:'DM Mono',monospace;min-height:100vh;background-image:radial-gradient(ellipse at 10% 20%,rgba(200,151,58,.07) 0%,transparent 50%),radial-gradient(ellipse at 90% 80%,rgba(192,57,43,.05) 0%,transparent 50%)}
 
-  /* HEADER */
-  .header { text-align: center; padding: 40px 24px 28px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
-  .header::before { content: '日本'; position: absolute; font-family: 'Shippori Mincho', serif; font-size: 180px; color: rgba(200,151,58,0.06); top: -20px; right: -10px; pointer-events: none; line-height: 1; }
-  .header-tag { font-size: 10px; letter-spacing: 4px; color: var(--red); text-transform: uppercase; margin-bottom: 10px; }
-  h1 { font-family: 'Shippori Mincho', serif; font-size: clamp(26px,5vw,44px); font-weight: 700; color: var(--ink); line-height: 1.1; }
-  h1 span { color: var(--gold); }
-  .subtitle { margin-top: 6px; font-size: 11px; color: var(--muted); letter-spacing: 2px; }
+/* ── LOGIN ── */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-box{background:white;border:1px solid var(--border);border-radius:6px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 8px 32px rgba(26,18,8,.1)}
+.login-top{background:var(--warm);border-bottom:1px solid var(--border);padding:32px;text-align:center;position:relative;overflow:hidden}
+.login-top::before{content:'日本';position:absolute;font-family:'Shippori Mincho',serif;font-size:120px;color:rgba(200,151,58,.07);top:-10px;right:-10px;pointer-events:none;line-height:1}
+.login-tag{font-size:9px;letter-spacing:4px;color:var(--red);text-transform:uppercase;margin-bottom:8px}
+.login-top h1{font-family:'Shippori Mincho',serif;font-size:26px;font-weight:700;color:var(--ink)}
+.login-top h1 span{color:var(--gold)}
+.login-body{padding:28px}
+.login-body .field{margin-bottom:16px}
+.login-body .field label{display:block;font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.login-body .field input{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:13px;color:var(--ink);background:var(--paper);outline:none;transition:border-color .2s}
+.login-body .field input:focus{border-color:var(--gold)}
+.login-btn{width:100%;padding:12px;background:var(--ink);color:var(--paper);border:none;border-radius:3px;font-family:'DM Mono',monospace;font-size:13px;letter-spacing:1px;cursor:pointer;transition:background .2s;margin-top:4px}
+.login-btn:hover{background:var(--gold)}
+.login-btn:disabled{opacity:.5;cursor:not-allowed}
+.login-switch{text-align:center;margin-top:16px;font-size:11px;color:var(--muted)}
+.login-switch a{color:var(--gold);cursor:pointer;text-decoration:none}
+.login-switch a:hover{text-decoration:underline}
+.login-err{background:#fdf0f0;border:1px solid var(--red);border-radius:3px;padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:14px;display:none}
+.login-err.show{display:block}
 
-  /* STATUS BAR */
-  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 20px; background: var(--warm); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-  .db-status { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex-shrink: 0; transition: background 0.3s; }
-  .status-dot.connected { background: var(--green); }
-  .status-dot.syncing { background: var(--gold); animation: pulse 1s infinite; }
-  .status-dot.error { background: var(--red); }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .db-badge { font-size: 10px; letter-spacing: 1px; color: var(--green); border: 1px solid var(--green); border-radius: 2px; padding: 2px 7px; opacity: 0.8; }
+/* ── APP ── */
+#app{display:none}
+.header{text-align:center;padding:36px 24px 24px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.header::before{content:'日本';position:absolute;font-family:'Shippori Mincho',serif;font-size:160px;color:rgba(200,151,58,.06);top:-15px;right:-5px;pointer-events:none;line-height:1}
+.header-tag{font-size:10px;letter-spacing:4px;color:var(--red);text-transform:uppercase;margin-bottom:8px}
+h1{font-family:'Shippori Mincho',serif;font-size:clamp(24px,5vw,42px);font-weight:700;color:var(--ink);line-height:1.1}
+h1 span{color:var(--gold)}
+.subtitle{margin-top:5px;font-size:11px;color:var(--muted);letter-spacing:2px}
 
-  .main { max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; }
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 20px;background:var(--warm);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.db-status{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .3s}
+.status-dot.connected{background:var(--green)}
+.status-dot.syncing{background:var(--gold);animation:pulse 1s infinite}
+.status-dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.user-info{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted)}
+.logout-btn{padding:4px 12px;border:1px solid var(--border);border-radius:2px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;background:none;color:var(--muted);transition:all .15s;letter-spacing:1px}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
 
-  /* SUMMARY CARDS */
-  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 14px; margin-bottom: 32px; }
-  .card { background: white; border: 1px solid var(--border); border-radius: 4px; padding: 18px 20px; position: relative; overflow: hidden; }
-  .card::after { content: ''; position: absolute; top:0; left:0; width:3px; height:100%; background: var(--gold); }
-  .card.red-accent::after { background: var(--red); }
-  .card-label { font-size: 9px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 7px; }
-  .card-value { font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 700; color: var(--ink); line-height: 1; }
-  .card-value.gold { color: var(--gold); }
-  .card-value.red { color: var(--red); font-size: 18px; }
-  .card-sub { font-size: 10px; color: var(--muted); margin-top: 4px; }
+.main{max-width:900px;margin:0 auto;padding:24px 18px 80px}
 
-  .section-title { font-family: 'Shippori Mincho', serif; font-size: 17px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+/* SUMMARY CARDS */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:28px}
+.card{background:white;border:1px solid var(--border);border-radius:4px;padding:16px 18px;position:relative;overflow:hidden}
+.card::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold)}
+.card.ra::after{background:var(--red)}
+.card-label{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.card-value{font-family:'Shippori Mincho',serif;font-size:24px;font-weight:700;color:var(--ink);line-height:1}
+.card-value.gold{color:var(--gold)}
+.card-value.red{color:var(--red);font-size:17px}
+.card-sub{font-size:10px;color:var(--muted);margin-top:3px}
 
-  /* CATEGORY BARS */
-  .category-bars { background: white; border: 1px solid var(--border); border-radius: 4px; padding: 22px; margin-bottom: 28px; }
-  .cat-row { display: grid; grid-template-columns: 120px 1fr 80px; align-items: center; gap: 12px; margin-bottom: 13px; }
-  .cat-row:last-child { margin-bottom: 0; }
-  .cat-name { font-size: 11px; color: var(--muted); letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .cat-bar-bg { height: 6px; background: var(--warm); border-radius: 3px; overflow: hidden; }
-  .cat-bar-fill { height: 100%; border-radius: 3px; background: var(--gold); transition: width 0.5s ease; min-width: 2px; }
-  .cat-amount { font-size: 12px; font-weight: 500; text-align: right; }
+.section-title{font-family:'Shippori Mincho',serif;font-size:16px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
 
-  /* ADD FORM */
-  .add-form { background: white; border: 1px solid var(--border); border-radius: 4px; padding: 22px; margin-bottom: 28px; }
-  .currency-toggle { display: flex; gap: 6px; margin-bottom: 16px; align-items: center; }
-  .currency-toggle label { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
-  .toggle-btn { padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; background: none; color: var(--muted); transition: all 0.15s; }
-  .toggle-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end; }
-  @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } }
-  .field label { display: block; font-size: 9px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
-  .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 13px; color: var(--ink); background: var(--paper); outline: none; transition: border-color 0.2s; }
-  .field input:focus, .field select:focus { border-color: var(--gold); }
-  .add-btn { padding: 10px 20px; background: var(--ink); color: var(--paper); border: none; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 1px; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
-  .add-btn:hover { background: var(--red); }
-  .add-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+/* CATEGORY BARS */
+.category-bars{background:white;border:1px solid var(--border);border-radius:4px;padding:20px;margin-bottom:24px}
+.cat-row{display:grid;grid-template-columns:120px 1fr 80px;align-items:center;gap:10px;margin-bottom:12px}
+.cat-row:last-child{margin-bottom:0}
+.cat-name{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-bar-bg{height:5px;background:var(--warm);border-radius:3px;overflow:hidden}
+.cat-bar-fill{height:100%;border-radius:3px;background:var(--gold);transition:width .5s ease;min-width:2px}
+.cat-amount{font-size:12px;font-weight:500;text-align:right}
 
-  /* EXPENSE LIST */
-  .expense-list { background: white; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 28px; overflow: hidden; }
-  .expense-header { display: grid; grid-template-columns: 1fr 110px 110px 36px; gap: 8px; padding: 11px 20px; background: var(--warm); font-size: 9px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-  .expense-item { display: grid; grid-template-columns: 1fr 110px 110px 36px; gap: 8px; padding: 13px 20px; border-bottom: 1px solid rgba(212,196,168,0.4); align-items: center; animation: slideIn 0.25s ease; }
-  @keyframes slideIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-  .expense-item:last-child { border-bottom: none; }
-  .expense-item:hover { background: var(--warm); }
-  .exp-name { font-size: 13px; }
-  .exp-meta { font-size: 10px; color: var(--muted); margin-top: 2px; }
-  .exp-amount { font-size: 13px; font-weight: 500; color: var(--gold); }
-  .exp-jpy { font-size: 10px; color: var(--muted); }
-  .del-btn { background: none; border: none; color: var(--border); cursor: pointer; font-size: 16px; padding: 4px; border-radius: 2px; transition: color 0.2s; line-height: 1; }
-  .del-btn:hover { color: var(--red); }
-  .empty-state { text-align: center; padding: 36px; color: var(--muted); font-size: 12px; letter-spacing: 1px; }
+/* ADD FORM */
+.add-form{background:white;border:1px solid var(--border);border-radius:4px;padding:20px;margin-bottom:24px}
+.currency-toggle{display:flex;gap:6px;margin-bottom:14px;align-items:center}
+.currency-toggle label{font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.toggle-btn{padding:4px 10px;border:1px solid var(--border);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;background:none;color:var(--muted);transition:all .15s}
+.toggle-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end}
+@media(max-width:580px){.form-grid{grid-template-columns:1fr 1fr}}
+.field label{display:block;font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:5px}
+.field input,.field select{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:13px;color:var(--ink);background:var(--paper);outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--gold)}
+.add-btn{padding:9px 18px;background:var(--ink);color:var(--paper);border:none;border-radius:3px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;cursor:pointer;transition:background .2s;white-space:nowrap}
+.add-btn:hover{background:var(--red)}
+.add-btn:disabled{opacity:.5;cursor:not-allowed}
 
-  /* MIGRATE BAR */
-  .migrate-bar { background: #fffbf0; border: 1px dashed var(--gold); border-radius: 4px; padding: 14px 20px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-  .migrate-info { display: flex; align-items: center; gap: 10px; }
+/* FILTER BAR */
+.filter-bar{background:white;border:1px solid var(--border);border-radius:4px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.filter-bar label{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;white-space:nowrap}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.chip{padding:4px 12px;border:1px solid var(--border);border-radius:20px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;background:none;color:var(--muted);transition:all .15s;white-space:nowrap}
+.chip:hover{border-color:var(--gold);color:var(--gold)}
+.chip.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.filter-total{font-size:11px;color:var(--muted);white-space:nowrap;margin-left:auto}
+.filter-total span{color:var(--gold);font-weight:500}
 
-  /* LOCAL BACKUP */
-  .analysis-section { background: white; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-  .analysis-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--border); background: var(--warm); }
-  .analyze-btn { padding: 8px 18px; background: var(--red); color: white; border: none; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 8px; }
-  .analyze-btn:hover { opacity: 0.85; }
-  .analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .analysis-body { padding: 22px; min-height: 80px; }
-  .analysis-text { font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 14px; line-height: 1.85; color: var(--ink); white-space: pre-wrap; }
-  .analysis-placeholder { color: var(--muted); font-size: 12px; letter-spacing: 1px; text-align: center; padding: 16px 0; }
+/* EXPENSE LIST */
+.expense-list{background:white;border:1px solid var(--border);border-radius:4px;margin-bottom:24px;overflow:hidden}
+.expense-header{display:grid;grid-template-columns:1fr 110px 110px 34px;gap:8px;padding:10px 18px;background:var(--warm);font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border)}
+.expense-item{display:grid;grid-template-columns:1fr 110px 110px 34px;gap:8px;padding:12px 18px;border-bottom:1px solid rgba(212,196,168,.4);align-items:center;animation:slideIn .2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.expense-item:last-child{border-bottom:none}
+.expense-item:hover{background:var(--warm)}
+.exp-name{font-size:13px}
+.exp-meta{font-size:10px;color:var(--muted);margin-top:2px}
+.exp-amount{font-size:13px;font-weight:500;color:var(--gold)}
+.exp-jpy{font-size:10px;color:var(--muted)}
+.del-btn{background:none;border:none;color:var(--border);cursor:pointer;font-size:15px;padding:3px;transition:color .2s}
+.del-btn:hover{color:var(--red)}
+.empty-state{text-align:center;padding:32px;color:var(--muted);font-size:12px;letter-spacing:1px}
 
-  /* TOAST */
-  .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 10px 20px; border-radius: 4px; font-size: 12px; letter-spacing: 1px; opacity: 0; transition: all 0.3s ease; pointer-events: none; z-index: 999; white-space: nowrap; }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .loading-dots span { animation: blink 1.2s infinite; font-size: 18px; color: var(--gold); }
-  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes blink { 0%,80%,100%{opacity:0} 40%{opacity:1} }
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--ink);color:var(--paper);padding:9px 18px;border-radius:4px;font-size:12px;letter-spacing:1px;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.loading-dots span{animation:blink 1.2s infinite;font-size:16px;color:var(--gold)}
+.loading-dots span:nth-child(2){animation-delay:.2s}
+.loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:0}40%{opacity:1}}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <p class="header-tag">Travel · Expense Tracker</p>
-  <h1>Japan Trip <span>支出</span></h1>
-  <p class="subtitle">SGD · JPY · Powered by Supabase</p>
+<!-- ── LOGIN SCREEN ── -->
+<div class="login-wrap" id="loginScreen">
+  <div class="login-box">
+    <div class="login-top">
+      <p class="login-tag">Travel · Expense Tracker</p>
+      <h1>Japan Trip <span>支出</span></h1>
+    </div>
+    <div class="login-body">
+      <div class="login-err" id="loginErr"></div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="authEmail" placeholder="you@example.com" onkeydown="if(event.key==='Enter')handleAuth()" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')handleAuth()" />
+      </div>
+      <button class="login-btn" id="authBtn" onclick="handleAuth()">Sign In</button>
+    </div>
+  </div>
 </div>
 
-<!-- STATUS BAR -->
-<div class="status-bar">
-  <div class="db-status">
-    <div class="status-dot syncing" id="statusDot"></div>
-    <span id="statusText">Connecting to database...</span>
+<!-- ── APP ── -->
+<div id="app">
+  <div class="header">
+    <p class="header-tag">Travel · Expense Tracker</p>
+    <h1>Japan Trip <span>支出</span></h1>
+    <p class="subtitle">SGD · JPY · Powered by Supabase</p>
   </div>
-  <div class="db-badge" id="dbBadge" style="display:none">● SUPABASE LIVE</div>
+
+  <div class="topbar">
+    <div class="db-status">
+      <div class="status-dot syncing" id="statusDot"></div>
+      <span id="statusText">Loading...</span>
+    </div>
+    <div class="user-info">
+      <span id="userEmail"></span>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- SUMMARY CARDS -->
+    <div class="summary-grid">
+      <div class="card">
+        <div class="card-label">Total (SGD)</div>
+        <div class="card-value gold" id="totalSGD">S$0.00</div>
+        <div class="card-sub" id="totalJPY">¥0</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Filtered</div>
+        <div class="card-value gold" id="filteredSGD">S$0.00</div>
+        <div class="card-sub" id="filteredCount">0 expenses</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Daily Avg</div>
+        <div class="card-value" id="dailyAvg" style="font-size:19px">—</div>
+        <div class="card-sub" id="dayCount">0 days</div>
+      </div>
+      <div class="card ra">
+        <div class="card-label">Top Category</div>
+        <div class="card-value red" id="topCat">—</div>
+        <div class="card-sub" id="topCatAmt"></div>
+      </div>
+    </div>
+
+    <!-- CATEGORY BREAKDOWN -->
+    <p class="section-title">By Category</p>
+    <div class="category-bars" id="catBars">
+      <div class="empty-state" style="padding:16px">Add expenses to see breakdown</div>
+    </div>
+
+    <!-- ADD EXPENSE -->
+    <p class="section-title">Add Expense</p>
+    <div class="add-form">
+      <div class="currency-toggle">
+        <label>Input in</label>
+        <button class="toggle-btn active" onclick="setCurrency('SGD')" id="btnSGD">SGD S$</button>
+        <button class="toggle-btn" onclick="setCurrency('JPY')" id="btnJPY">JPY ¥</button>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Description</label>
+          <input type="text" id="desc" placeholder="e.g. Ramen in Shinjuku" onkeydown="if(event.key==='Enter')addExpense()" />
+        </div>
+        <div class="field">
+          <label>Amount (<span id="currLabel">SGD</span>)</label>
+          <input type="number" id="amount" placeholder="0.00" min="0" step="0.01" onkeydown="if(event.key==='Enter')addExpense()" />
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <select id="category">
+            <option value="Food &amp; Drink">🍜 Food &amp; Drink</option>
+            <option value="Transport">🚄 Transport</option>
+            <option value="Accommodation">🏨 Accommodation</option>
+            <option value="Shopping">🛍️ Shopping</option>
+            <option value="Attractions">⛩️ Attractions</option>
+            <option value="Entertainment">🎌 Entertainment</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="add-btn" id="addBtn" onclick="addExpense()">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <p class="section-title">Expenses</p>
+    <div class="filter-bar">
+      <label>Filter</label>
+      <div class="filter-chips" id="filterChips">
+        <button class="chip active" onclick="setFilter('All')" data-cat="All">All</button>
+        <button class="chip" onclick="setFilter('Food &amp; Drink')" data-cat="Food &amp; Drink">🍜 Food</button>
+        <button class="chip" onclick="setFilter('Transport')" data-cat="Transport">🚄 Transport</button>
+        <button class="chip" onclick="setFilter('Accommodation')" data-cat="Accommodation">🏨 Stay</button>
+        <button class="chip" onclick="setFilter('Shopping')" data-cat="Shopping">🛍️ Shopping</button>
+        <button class="chip" onclick="setFilter('Attractions')" data-cat="Attractions">⛩️ Attractions</button>
+        <button class="chip" onclick="setFilter('Entertainment')" data-cat="Entertainment">🎌 Entertainment</button>
+        <button class="chip" onclick="setFilter('Other')" data-cat="Other">📦 Other</button>
+      </div>
+      <div class="filter-total" id="filterTotal"></div>
+    </div>
+
+    <!-- EXPENSE LIST -->
+    <div class="expense-list">
+      <div class="expense-header">
+        <div>Description</div><div>Category</div><div>Amount</div><div></div>
+      </div>
+      <div id="expenseList">
+        <div class="empty-state"><span class="loading-dots"><span>·</span><span>·</span><span>·</span></span></div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<div class="main">
-
-  <div class="summary-grid">
-    <div class="card">
-      <div class="card-label">Total (SGD)</div>
-      <div class="card-value gold" id="totalSGD">S$0.00</div>
-      <div class="card-sub" id="totalJPY">¥0</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Entries</div>
-      <div class="card-value" id="entryCount">0</div>
-      <div class="card-sub">expenses logged</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Daily Avg</div>
-      <div class="card-value" id="dailyAvg" style="font-size:20px">—</div>
-      <div class="card-sub" id="dayCount">0 days</div>
-    </div>
-    <div class="card red-accent">
-      <div class="card-label">Top Category</div>
-      <div class="card-value red" id="topCat">—</div>
-      <div class="card-sub" id="topCatAmt"></div>
-    </div>
-  </div>
-
-  <p class="section-title">By Category</p>
-  <div class="category-bars" id="catBars">
-    <div class="analysis-placeholder">Loading...</div>
-  </div>
-
-  <p class="section-title">Add Expense</p>
-  <div class="add-form">
-    <div class="currency-toggle">
-      <label>Input in</label>
-      <button class="toggle-btn active" onclick="setCurrency('SGD')" id="btnSGD">SGD S$</button>
-      <button class="toggle-btn" onclick="setCurrency('JPY')" id="btnJPY">JPY ¥</button>
-    </div>
-    <div class="form-grid">
-      <div class="field">
-        <label>Description</label>
-        <input type="text" id="desc" placeholder="e.g. Ramen in Shinjuku" onkeydown="if(event.key==='Enter')addExpense()" />
-      </div>
-      <div class="field">
-        <label>Amount (<span id="currLabel">SGD</span>)</label>
-        <input type="number" id="amount" placeholder="0.00" min="0" step="0.01" onkeydown="if(event.key==='Enter')addExpense()" />
-      </div>
-      <div class="field">
-        <label>Category</label>
-        <select id="category">
-          <option value="Food & Drink">🍜 Food & Drink</option>
-          <option value="Transport">🚄 Transport</option>
-          <option value="Accommodation">🏨 Accommodation</option>
-          <option value="Shopping">🛍️ Shopping</option>
-          <option value="Attractions">⛩️ Attractions</option>
-          <option value="Entertainment">🎌 Entertainment</option>
-          <option value="Other">📦 Other</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>&nbsp;</label>
-        <button class="add-btn" id="addBtn" onclick="addExpense()">+ Add</button>
-      </div>
-    </div>
-  </div>
-
-  <p class="section-title">Expenses</p>
-  <div class="expense-list">
-    <div class="expense-header">
-      <div>Description</div><div>Category</div><div>Amount</div><div></div>
-    </div>
-    <div id="expenseList">
-      <div class="empty-state"><span class="loading-dots"><span>·</span><span>·</span><span>·</span></span></div>
-    </div>
-  </div>
-
-  <!-- MIGRATE FROM OLD FILE -->
-  <div class="migrate-bar" id="migrateBar">
-    <div class="migrate-info">
-      <span style="font-size:20px">📂</span>
-      <div>
-        <div class="sync-title">Migrate data from old tracker</div>
-        <div class="sync-sub">Export JSON from your old file → import here → data saves to Supabase</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <label class="sync-btn import-btn" id="migrateBtn">
-        ↑ Import old JSON
-        <input type="file" accept=".json" onchange="migrateFromOldFile(event)" style="display:none" />
-      </label>
-      <button onclick="document.getElementById('migrateBar').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:4px">×</button>
-    </div>
-  </div>
-
-  <!-- AI ANALYSIS -->
-  <div class="analysis-section">
-    <div class="analysis-header">
-      <div>
-        <p class="section-title" style="margin:0;font-size:16px">AI Spending Analysis</p>
-        <p style="font-size:11px;color:var(--muted);margin-top:4px">Powered by Claude · Tailored for Singapore travellers</p>
-      </div>
-      <button class="analyze-btn" onclick="runAnalysis()" id="analyzeBtn"><span>✦</span> Analyze</button>
-    </div>
-    <div class="analysis-body">
-      <div class="analysis-placeholder" id="analysisPlaceholder">Click "Analyze" to get AI insights on your spending</div>
-      <div class="analysis-text" id="analysisText" style="display:none"></div>
-    </div>
-  </div>
-
-</div>
 <div class="toast" id="toast"></div>
 
 <script>
-// ── SUPABASE CONFIG ───────────────────────────────────────────────────────────
-// Using Edge Function endpoint — works from any device/origin (CORS-safe)
-const API = 'https://wdqfivgmyhysxcndnhup.supabase.co/functions/v1/expenses';
-const API_HEADERS = { 'Content-Type': 'application/json' };
-
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://wdqfivgmyhysxcndnhup.supabase.co';
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkcWZpdmdteWh5c3hjbmRuaHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjIzNjMsImV4cCI6MjA4OTY5ODM2M30.knWkF8eZEELWXkasvAW0prACV2QDW260qe9h_9cExVA';
+const API = `${SUPABASE_URL}/functions/v1/expenses`;
 const SGD_TO_JPY = 111;
+
 let expenses = [];
 let inputCurrency = 'SGD';
 let dbReady = false;
+let activeFilter = 'All';
+let authToken = null;
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
-function showToast(msg, dur=2800) {
+function showToast(msg, dur = 2600) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), dur);
@@ -259,148 +290,194 @@ function showToast(msg, dur=2800) {
 
 function setStatus(state, text) {
   const dot = document.getElementById('statusDot');
-  dot.className = 'status-dot' + (state ? ' '+state : '');
+  dot.className = 'status-dot' + (state ? ' ' + state : '');
   document.getElementById('statusText').textContent = text;
-  document.getElementById('dbBadge').style.display = state === 'connected' ? '' : 'none';
 }
 
+function apiHeaders() {
+  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` };
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+async function handleAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const errEl = document.getElementById('loginErr');
+  const btn = document.getElementById('authBtn');
+
+  if (!email || !password) {
+    errEl.textContent = 'Please enter email and password.';
+    errEl.classList.add('show'); return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+  errEl.classList.remove('show');
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      errEl.textContent = data.error_description || data.msg || 'Authentication failed.';
+      errEl.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = isSignUp ? 'Create Account' : 'Sign In';
+      return;
+    }
+
+    authToken = data.access_token;
+    localStorage.setItem('jp_token', authToken);
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('userEmail').textContent = email;
+    loadExpenses();
+
+  } catch (e) {
+    errEl.textContent = 'Network error — please try again.';
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+}
+
+async function logout() {
+  await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': `Bearer ${authToken}` }
+  });
+  authToken = null;
+  localStorage.removeItem('jp_token');
+  expenses = [];
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPassword').value = '';
+  document.getElementById('authBtn').textContent = 'Sign In';
+}
+
+// ── CURRENCY ──────────────────────────────────────────────────────────────────
 function setCurrency(cur) {
   inputCurrency = cur;
-  document.getElementById('btnSGD').classList.toggle('active', cur==='SGD');
-  document.getElementById('btnJPY').classList.toggle('active', cur==='JPY');
+  document.getElementById('btnSGD').classList.toggle('active', cur === 'SGD');
+  document.getElementById('btnJPY').classList.toggle('active', cur === 'JPY');
   document.getElementById('currLabel').textContent = cur;
-  document.getElementById('amount').placeholder = cur==='SGD' ? '0.00' : '0';
-  document.getElementById('amount').step = cur==='SGD' ? '0.01' : '1';
+  document.getElementById('amount').placeholder = cur === 'SGD' ? '0.00' : '0';
+  document.getElementById('amount').step = cur === 'SGD' ? '0.01' : '1';
 }
 
-// ── SUPABASE DB ───────────────────────────────────────────────────────────────
+// ── FILTER ────────────────────────────────────────────────────────────────────
+function setFilter(cat) {
+  activeFilter = cat;
+  document.querySelectorAll('.chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.cat === cat);
+  });
+  render();
+}
+
+function getFiltered() {
+  if (activeFilter === 'All') return expenses;
+  return expenses.filter(e => e.category === activeFilter);
+}
+
+// ── DB ────────────────────────────────────────────────────────────────────────
 async function loadExpenses() {
-  setStatus('syncing', 'Loading from Supabase...');
+  setStatus('syncing', 'Loading...');
   try {
-    const res = await fetch(API, { headers: API_HEADERS });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const res = await fetch(API, { headers: apiHeaders() });
+    if (res.status === 401) { logout(); return; }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    expenses = data.map(row => ({
-      id: row.id,
-      desc: row.description,
-      sgd: parseFloat(row.sgd),
-      jpy: row.jpy,
-      category: row.category,
-      date: row.expense_date
-    }));
+    expenses = data.map(r => ({ id: r.id, desc: r.description, sgd: parseFloat(r.sgd), jpy: r.jpy, category: r.category, date: r.expense_date }));
     dbReady = true;
-    setStatus('connected', `${expenses.length} expense${expenses.length!==1?'s':''} · synced across all devices`);
+    setStatus('connected', `${expenses.length} expense${expenses.length !== 1 ? 's' : ''} · synced`);
     render();
-  } catch(err) {
-    setStatus('error', 'Could not connect to database');
-    console.error('Load error:', err);
-    document.getElementById('expenseList').innerHTML = '<div class="empty-state">⚠ Database connection failed — check your internet connection</div>';
+  } catch (e) {
+    setStatus('error', 'Connection failed');
+    document.getElementById('expenseList').innerHTML = '<div class="empty-state">⚠ Could not load — check your connection</div>';
   }
 }
 
-async function insertExpense(exp) {
-  const res = await fetch(API, {
-    method: 'POST',
-    headers: API_HEADERS,
-    body: JSON.stringify({
-      id: exp.id,
-      description: exp.desc,
-      sgd: exp.sgd,
-      jpy: exp.jpy,
-      category: exp.category,
-      expense_date: exp.date
-    })
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(err);
-  }
-  return res.json();
-}
-
-async function deleteExpenseFromDB(id) {
-  const res = await fetch(`${API}?id=${id}`, {
-    method: 'DELETE',
-    headers: API_HEADERS
-  });
-  if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
-}
-
-// ── ACTIONS ───────────────────────────────────────────────────────────────────
 async function addExpense() {
-  if (!dbReady) { showToast('Still connecting to database...'); return; }
+  if (!dbReady) { showToast('Still connecting...'); return; }
   const desc = document.getElementById('desc').value.trim();
   const raw = parseFloat(document.getElementById('amount').value);
   const category = document.getElementById('category').value;
   if (!desc || isNaN(raw) || raw <= 0) { document.getElementById('desc').focus(); return; }
 
-  const sgd = inputCurrency==='SGD' ? raw : parseFloat((raw/SGD_TO_JPY).toFixed(2));
-  const jpy = inputCurrency==='JPY' ? Math.round(raw) : Math.round(raw*SGD_TO_JPY);
-  const expense = { id: Date.now(), desc, sgd, jpy, category, date: new Date().toLocaleDateString('en-SG') };
+  const sgd = inputCurrency === 'SGD' ? raw : parseFloat((raw / SGD_TO_JPY).toFixed(2));
+  const jpy = inputCurrency === 'JPY' ? Math.round(raw) : Math.round(raw * SGD_TO_JPY);
+  const exp = { id: Date.now(), desc, sgd, jpy, category, date: new Date().toLocaleDateString('en-SG') };
 
   const btn = document.getElementById('addBtn');
   btn.disabled = true; btn.textContent = '...';
-
   try {
-    await insertExpense(expense);
-    expenses.push(expense);
+    const res = await fetch(API, { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ id: exp.id, description: exp.desc, sgd: exp.sgd, jpy: exp.jpy, category: exp.category, expense_date: exp.date }) });
+    if (res.status === 401) { logout(); return; }
+    if (!res.ok) throw new Error(await res.text());
+    expenses.push(exp);
     document.getElementById('desc').value = '';
     document.getElementById('amount').value = '';
     render();
-    setStatus('connected', `${expenses.length} expense${expenses.length!==1?'s':''} · synced across all devices`);
-    showToast('✓ Saved to Supabase!');
-  } catch(err) {
-    showToast('✗ Failed to save — try again');
-    console.error('Insert error:', err);
-  }
-
+    setStatus('connected', `${expenses.length} expense${expenses.length !== 1 ? 's' : ''} · synced`);
+    showToast('✓ Saved!');
+  } catch (e) { showToast('✗ Save failed'); }
   btn.disabled = false; btn.textContent = '+ Add';
 }
 
 async function deleteExpense(id) {
   try {
-    await deleteExpenseFromDB(id);
+    const res = await fetch(`${API}?id=${id}`, { method: 'DELETE', headers: apiHeaders() });
+    if (res.status === 401) { logout(); return; }
+    if (!res.ok) throw new Error('Delete failed');
     expenses = expenses.filter(e => e.id !== id);
     render();
-    setStatus('connected', `${expenses.length} expense${expenses.length!==1?'s':''} · synced across all devices`);
-    showToast('Expense removed');
-  } catch(err) {
-    showToast('✗ Delete failed — try again');
-    console.error('Delete error:', err);
-  }
+    showToast('Removed');
+  } catch (e) { showToast('✗ Delete failed'); }
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function render() {
-  const totalSGD = expenses.reduce((s,e)=>s+e.sgd,0);
-  const totalJPY = expenses.reduce((s,e)=>s+e.jpy,0);
-  document.getElementById('totalSGD').textContent = 'S$'+totalSGD.toFixed(2);
-  document.getElementById('totalJPY').textContent = '¥'+totalJPY.toLocaleString();
-  document.getElementById('entryCount').textContent = expenses.length;
-  const days = new Set(expenses.map(e=>e.date)).size || 1;
-  document.getElementById('dayCount').textContent = days+(days===1?' day':' days');
-  document.getElementById('dailyAvg').textContent = expenses.length ? 'S$'+(totalSGD/days).toFixed(2) : '—';
+  const filtered = getFiltered();
+  const totalSGD = expenses.reduce((s, e) => s + e.sgd, 0);
+  const totalJPY = expenses.reduce((s, e) => s + e.jpy, 0);
+  const filteredSGD = filtered.reduce((s, e) => s + e.sgd, 0);
 
+  document.getElementById('totalSGD').textContent = 'S$' + totalSGD.toFixed(2);
+  document.getElementById('totalJPY').textContent = '¥' + totalJPY.toLocaleString();
+  document.getElementById('filteredSGD').textContent = 'S$' + filteredSGD.toFixed(2);
+  document.getElementById('filteredCount').textContent = filtered.length + ' expense' + (filtered.length !== 1 ? 's' : '');
+  document.getElementById('filterTotal').innerHTML = activeFilter !== 'All' ? `Showing: <span>S$${filteredSGD.toFixed(2)}</span>` : '';
+
+  const days = new Set(expenses.map(e => e.date)).size || 1;
+  document.getElementById('dayCount').textContent = days + (days === 1 ? ' day' : ' days');
+  document.getElementById('dailyAvg').textContent = expenses.length ? 'S$' + (totalSGD / days).toFixed(2) : '—';
+
+  // Category breakdown (always from ALL expenses)
   const cats = {};
-  expenses.forEach(e=>{ cats[e.category]=(cats[e.category]||0)+e.sgd; });
-  const catEntries = Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  expenses.forEach(e => { cats[e.category] = (cats[e.category] || 0) + e.sgd; });
+  const catEntries = Object.entries(cats).sort((a, b) => b[1] - a[1]);
   const maxCat = catEntries[0];
   document.getElementById('topCat').textContent = maxCat ? maxCat[0].split(' ').slice(1).join(' ') : '—';
-  document.getElementById('topCatAmt').textContent = maxCat ? 'S$'+maxCat[1].toFixed(2) : '';
+  document.getElementById('topCatAmt').textContent = maxCat ? 'S$' + maxCat[1].toFixed(2) : '';
 
-  document.getElementById('catBars').innerHTML = catEntries.length===0
-    ? '<div class="analysis-placeholder">Add expenses to see breakdown</div>'
-    : catEntries.map(([name,val])=>`
-        <div class="cat-row">
-          <div class="cat-name">${name}</div>
-          <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${(val/catEntries[0][1]*100).toFixed(1)}%"></div></div>
+  document.getElementById('catBars').innerHTML = catEntries.length === 0
+    ? '<div class="empty-state" style="padding:14px">Add expenses to see breakdown</div>'
+    : catEntries.map(([name, val]) => `
+        <div class="cat-row" style="cursor:pointer" onclick="setFilter('${name.replace(/'/g, "\\'")}')">
+          <div class="cat-name" style="${activeFilter === name ? 'color:var(--gold);font-weight:500' : ''}">${name}</div>
+          <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${(val / catEntries[0][1] * 100).toFixed(1)}%;${activeFilter === name ? 'background:var(--red)' : ''}"></div></div>
           <div class="cat-amount">S$${val.toFixed(2)}</div>
         </div>`).join('');
 
-  document.getElementById('expenseList').innerHTML = expenses.length===0
-    ? '<div class="empty-state">No expenses yet — add your first one above</div>'
-    : [...expenses].reverse().map(e=>`
+  // Filtered expense list
+  document.getElementById('expenseList').innerHTML = filtered.length === 0
+    ? `<div class="empty-state">${expenses.length === 0 ? 'No expenses yet — add your first one above' : 'No expenses in this category'}</div>`
+    : [...filtered].reverse().map(e => `
         <div class="expense-item">
           <div><div class="exp-name">${e.desc}</div><div class="exp-meta">${e.date}</div></div>
           <div class="exp-meta" style="font-size:11px">${e.category}</div>
@@ -409,97 +486,25 @@ function render() {
         </div>`).join('');
 }
 
-// ── MIGRATE FROM OLD FILE ─────────────────────────────────────────────────────
-async function migrateFromOldFile(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const migrateBtn = document.getElementById('migrateBtn');
-  migrateBtn.textContent = '⏳ Importing...';
-
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    try {
-      const imported = JSON.parse(e.target.result);
-      if (!Array.isArray(imported) || imported.length === 0) {
-        showToast('✗ No valid expenses found in file');
-        migrateBtn.innerHTML = '↑ Import old JSON<input type="file" accept=".json" onchange="migrateFromOldFile(event)" style="display:none" />';
-        return;
-      }
-
-      // Get existing IDs from Supabase to avoid duplicates
-      const existingIds = new Set(expenses.map(x => x.id));
-      const toInsert = imported.filter(x => !existingIds.has(x.id));
-
-      if (toInsert.length === 0) {
-        showToast('All expenses already exist in Supabase — nothing to import!');
-        document.getElementById('migrateBar').style.display = 'none';
-        return;
-      }
-
-      setStatus('syncing', `Migrating ${toInsert.length} expenses to Supabase...`);
-
-      // Insert all one by one (could batch but keeping it simple & safe)
-      let successCount = 0;
-      for (const exp of toInsert) {
-        try {
-          // Handle both old format (usd field) and new format (sgd field)
-          const sgd = exp.sgd ?? exp.usd ?? 0;
-          const jpy = exp.jpy ?? Math.round(sgd * SGD_TO_JPY);
-          const normalized = {
-            id: exp.id,
-            desc: exp.desc || exp.description || 'Unknown',
-            sgd: parseFloat(sgd.toFixed(2)),
-            jpy: Math.round(jpy),
-            category: exp.category || 'Other',
-            date: exp.date || exp.expense_date || new Date().toLocaleDateString('en-SG')
-          };
-          await insertExpense(normalized);
-          expenses.push(normalized);
-          successCount++;
-        } catch(err) {
-          console.warn('Skipped expense:', exp.id, err);
-        }
-      }
-
-      render();
-      setStatus('connected', `${expenses.length} expense${expenses.length!==1?'s':''} · synced across all devices`);
-      showToast(`✓ Migrated ${successCount} expense${successCount!==1?'s':''} to Supabase!`);
-      document.getElementById('migrateBar').style.display = 'none';
-
-    } catch(err) {
-      showToast('✗ Invalid file — use a JSON exported from the old tracker');
-      console.error('Migration error:', err);
-      migrateBtn.innerHTML = '↑ Import old JSON<input type="file" accept=".json" onchange="migrateFromOldFile(event)" style="display:none" />';
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
-// ── AI ANALYSIS ───────────────────────────────────────────────────────────────
-async function runAnalysis() {
-  if (!expenses.length) { showToast('Add some expenses first!'); return; }
-  const btn=document.getElementById('analyzeBtn'), ph=document.getElementById('analysisPlaceholder'), tx=document.getElementById('analysisText');
-  btn.disabled=true; btn.innerHTML='<span class="loading-dots"><span>·</span><span>·</span><span>·</span></span>';
-  ph.style.display='block'; ph.innerHTML='<span class="loading-dots"><span>·</span><span>·</span><span>·</span></span> Analyzing...'; tx.style.display='none';
-
-  const totalSGD=expenses.reduce((s,e)=>s+e.sgd,0), totalJPY=expenses.reduce((s,e)=>s+e.jpy,0);
-  const cats={}; expenses.forEach(e=>{cats[e.category]=(cats[e.category]||0)+e.sgd;});
-  const days=new Set(expenses.map(e=>e.date)).size||1;
-  const summary=`Japan Trip (Singaporean): Total S$${totalSGD.toFixed(2)} / ¥${totalJPY.toLocaleString()}, ${expenses.length} entries over ${days} day(s), avg S$${(totalSGD/days).toFixed(2)}/day. Categories: ${Object.entries(cats).map(([k,v])=>`${k}: S$${v.toFixed(2)}`).join(', ')}. Items: ${expenses.map(e=>`${e.desc} (${e.category}): S$${e.sgd.toFixed(2)}`).join('; ')}`;
-
-  try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'You are a friendly travel finance advisor for a Singaporean travelling to Japan. Analyse the spending and give warm, specific insights — how it compares to typical Japan trip budgets for Singaporeans, what dominates spend, and 1-2 actionable tips. Paragraph form only, no bullet lists. Sprinkle in a Japanese word naturally. Under 260 words.',messages:[{role:'user',content:`Analyse my Japan trip spending:\n${summary}`}]})});
-    const d=await res.json();
-    const text=d.content?.find(b=>b.type==='text')?.text||'Unable to generate analysis.';
-    ph.style.display='none'; tx.style.display='block'; tx.textContent=text;
-  } catch { ph.style.display='block'; ph.textContent='Analysis failed — please try again.'; }
-  btn.disabled=false; btn.innerHTML='<span>✦</span> Re-analyze';
-}
-
 // ── INIT ──────────────────────────────────────────────────────────────────────
-loadExpenses();
+// Check for existing session in localStorage
+const savedToken = localStorage.getItem('jp_token');
+if (savedToken) {
+  // Verify token is still valid
+  fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    headers: { 'apikey': ANON_KEY, 'Authorization': `Bearer ${savedToken}` }
+  }).then(r => r.json()).then(data => {
+    if (data.email) {
+      authToken = savedToken;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('userEmail').textContent = data.email;
+      loadExpenses();
+    } else {
+      localStorage.removeItem('jp_token');
+    }
+  }).catch(() => localStorage.removeItem('jp_token'));
+}
 </script>
 </body>
 </html>
